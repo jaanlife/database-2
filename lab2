@@ -1,0 +1,223 @@
+Q1. Write a PL/pgSQL DO block to store a first_name and last_name in variables,  concatenate 
+them into a single variable, and print a greeting message using RAISE NOTICE. 
+          DO $$  
+          DECLARE 
+          first_name TEXT := 'Nimal'; 
+          last_name TEXT := 'Perera'; 
+          full_name TEXT; 
+          BEGIN 
+          full_name := first_name || ' ' || last_name; 
+          RAISE NOTICE 'Full Name: %', full_name; 
+          END $$; 
+
+DO STATEMENTS, VARIABLE DECLARATION AND PRINT 
+Q2. Declare a integer variable with a value of your preference, and print it. 
+          DO 
+          $$ 
+          DECLARE 
+          counter INT := 1; 
+          BEGIN 
+          RAISE NOTICE 'Counter value is %', counter; 
+          END; 
+          $$ 
+          LANGUAGE plpgsql; 
+
+Q3. Declare a variable named language and assign it the value 'PostgreSQL'.  Declare another 
+variable named version and assign it the value 15.  Print a message: “You are learning 
+PostgreSQL version 15” 
+          DO 
+          $$ 
+          DECLARE 
+          language TEXT := 'postgreSQL'; 
+          version INT := 15; 
+          BEGIN 
+          RAISE NOTICE 'You are learning % version %.', language, version; 
+          END; 
+          $$ 
+          LANGUAGE plpgsql; 
+
+CONDITIONAL STATEMENTS IF-ELSE 
+Q4. Create a variable score and assign it any value between 0 and 100. “Passed” if score >= 50 
+“Failed” if score < 50 
+          DO 
+          $$ 
+          DECLARE 
+          score INT := 50; 
+          BEGIN 
+          IF score >= 50 THEN 
+          RAISE NOTICE 'You have passed!'; 
+          ELSE 
+          RAISE NOTICE 'You have failed!'; 
+          END IF; 
+          END; 
+          $$ 
+          LANGUAGE plpgsql; 
+
+CONDITIONAL STATEMENTS IF-ELSE-IF 
+Q5. Declare a variable score (value between 0–100).  
+“Excellent” if score >= 90 
+“Good” if score >= 75 
+“Average” if score >= 60 
+“Fail” if score < 60 
+          DO 
+          $$ 
+          DECLARE 
+          score INT := 90; 
+          BEGIN 
+          IF score >= 90 THEN 
+          RAISE NOTICE 'Excellent!'; 
+          ELSEIF score >= 75 THEN 
+          RAISE NOTICE 'Good!'; 
+          ELSEIF score >= 60 THEN 
+          RAISE NOTICE 'Average!'; 
+          ELSE 
+          RAISE NOTICE 'Failed!'; 
+          END IF; 
+          END; 
+          $$ 
+          LANGUAGE plpgsql; 
+
+CONDITIONAL STATEMENTS CASE 
+Q6. Declare a variable grade (A, B, C, D, F). Use a CASE statement to print a message based on 
+the grade: 
+A: Excellent 
+B: Good 
+C: Average 
+D: Poor 
+F: Fail 
+Default: Invalid grade 
+          DO $$ 
+          DECLARE 
+          grade CHAR := 'B'; 
+          BEGIN 
+          CASE grade 
+          WHEN 'A' THEN RAISE NOTICE 'Excellent'; 
+          WHEN 'B' THEN RAISE NOTICE 'Good'; 
+          WHEN 'C' THEN RAISE NOTICE 'Average'; 
+          WHEN 'D' THEN RAISE NOTICE 'Poor'; 
+          WHEN 'F' THEN RAISE NOTICE 'Fail'; 
+          ELSE RAISE NOTICE 'Invalid grade'; 
+          END CASE; 
+          END 
+          $$  
+          LANGUAGE plpgsql; 
+
+BASIC LOOP STATEMENTS  
+Q7. Print 1 to 5 using a basic loop. 
+          DO $$ 
+          DECLARE 
+          counter INT := 1; 
+          BEGIN 
+          LOOP 
+          EXIT WHEN counter >= 5; 
+          RAISE NOTICE 'Counter value: %', counter; 
+          counter := counter + 1; 
+          END LOOP; 
+          END 
+          $$  
+          LANGUAGE plpgsql; 
+
+WHILE LOOP STATEMENTS  
+Q8. Print 1 to 5 using a while loop. 
+          DO $$ 
+          DECLARE 
+          counter INT := 1; 
+          BEGIN 
+          WHILE counter <= 5 LOOP 
+          RAISE NOTICE 'Counter value: %', counter; 
+          counter := counter + 1; 
+          END LOOP; 
+          END 
+          $$  
+          LANGUAGE plpgsql; 
+
+FOR LOOP STATEMENTS  
+Q9. Print 1 to 5 using a for loop. 
+          DO $$  
+          DECLARE 
+          i INT; 
+          BEGIN 
+          FOR i IN 1..5 LOOP 
+          RAISE NOTICE 'Current number: %', i; 
+          END LOOP; 
+          END $$; 
+          EXIT CONTINUE STATEMENTS  
+
+Q10.Print the even numbers which are less than or equal to 10, using a loop. 
+          DO $$  
+          DECLARE 
+          counter INT := 1;  
+          BEGIN 
+          LOOP 
+          EXIT WHEN counter > 10;   
+          IF counter % 2 = 0 THEN 
+          RAISE NOTICE 'Even number: %', counter; 
+          ELSE 
+          counter := counter + 1; 
+          CONTINUE;   
+          END IF; 
+          counter := counter + 1; 
+          END LOOP; 
+          END $$; 
+
+EXCEPTION HANDLING  
+Q11. Try dividing a number by zero. Catch the error and print: “Error: Cannot divide by zero”.  
+NOTE: Use division_by_zero exception. 
+          DO $$ 
+          DECLARE 
+          x INT := 10; 
+          y INT := 0; 
+          result INT; 
+          BEGIN 
+          BEGIN 
+          result := x / y; 
+          RAISE NOTICE 'Result: %', result; 
+          EXCEPTION 
+          WHEN division_by_zero THEN 
+          RAISE NOTICE 'Error: Cannot divide by zero'; 
+          END; 
+          END 
+          $$ LANGUAGE plpgsql; 
+
+MIX PRACTICE QUESTIONS 
+Q12. Write a PL/pgSQL DO block with a WHILE loop that sums the values from 1 to 100.  
+The loop should: Skip any even numbers using CONTINUE and add only the odd numbers to the 
+sum. Once the loop completes, print the sum of the odd numbers. 
+          DO $$  
+          DECLARE 
+          counter INT := 1; 
+          sum INT := 0; 
+          BEGIN 
+          WHILE counter <= 100 LOOP 
+          IF counter % 2 = 0 THEN 
+          counter := counter + 1; 
+          CONTINUE; 
+          END IF; 
+          sum := sum + counter; 
+          counter := counter + 1; 
+          END LOOP; 
+          RAISE NOTICE 'Sum of odd numbers from 1 to 100: %', sum; 
+          END $$; 
+
+Q13. Write a PL/pgSQL DO block that iterates over a range of numbers from 1 to 15 using a 
+FOR loop. For each number: 
+If the number is divisible by both 3 and 5, print "FizzBuzz". 
+If the number is divisible only by 3, print "Fizz". 
+If the number is divisible only by 5, print "Buzz". 
+Otherwise, print the number itself. 
+          DO $$  
+          DECLARE 
+          i INT; 
+          BEGIN 
+          FOR i IN 1..15 LOOP 
+          IF i % 3 = 0 AND i % 5 = 0 THEN 
+          RAISE NOTICE 'FizzBuzz'; 
+          ELSIF i % 3 = 0 THEN 
+          RAISE NOTICE 'Fizz'; 
+          ELSIF i % 5 = 0 THEN 
+          RAISE NOTICE 'Buzz'; 
+          ELSE 
+          RAISE NOTICE '%', i; 
+          END IF; 
+          END LOOP; 
+          END $$;
