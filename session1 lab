@@ -1,0 +1,71 @@
+1. Create a New Database 
+                CREATE DATABASE company_db; 
+                \c company_db 
+
+2. Create Tables 
+Create table called departments with two columns.(Department ID and Department name) 
+
+              CREATE TABLE departments ( 
+              dept_id INT PRIMARY KEY, 
+              dept_name VARCHAR(50) NOT NULL 
+              ); 
+
+Create table called employees with employee ID, employee name, email and department ID 
+(Includes a foreign key referencing departments and employee ID should be auto increment) 
+
+              CREATE TABLE employees ( 
+              emp_id int GENERATED ALWAYS AS IDENTITY PRIMARY KEY, 
+              emp_name VARCHAR(100) NOT NULL, 
+              email VARCHAR(100), 
+              dept_id INT REFERENCES departments(dept_id) 
+              ); 
+
+3. Insert Data 
+              INSERT INTO departments (dept_id, dept_name) 
+              VALUES (1,'HR'), (2,'Finance'), (3,'IT'); 
+
+3.2 Insert Employees 
+              INSERT INTO employees (emp_name, email, dept_id) 
+              VALUES  
+              ('Alice Johnson', 'alice@company.com', 1), 
+              ('Bob Smith', 'bob@company.com', 2), 
+              ('Charlie Brown', 'charlie@company.com', 3); 
+
+4. CRUD Operations  
+
+(a) Add a new department called "Marketing": 
+              INSERT INTO departments (dept_name) 
+              VALUES ('Marketing'); 
+
+(b) Add a new employee named "Diana Rose" to the Marketing department: 
+              INSERT INTO employees (emp_name, email, dept_id) 
+              VALUES ('Diana Rose', 'diana@company.com', 4); 
+
+(c) Display all employees: 
+              SELECT * FROM employees; 
+
+(d) List all employees with their department names: 
+              SELECT e.emp_name, e.email, d.dept_name 
+              FROM employees e 
+              JOIN departments d ON e.dept_id = d.dept_id; 
+
+(e) Find all employees who work in the 'IT' department: 
+              SELECT emp_name  
+              FROM employees  
+              WHERE dept_id = (SELECT dept_id FROM departments WHERE dept_name = 'IT'); 
+
+(f) Change Bob Smith’s email to bobsmith@company.com: 
+              UPDATE employees SET email = 'bobsmith@company.com' WHERE emp_name = 'Bob 
+Smith'; 
+
+(g) Rename the department "HR" to "Human Resources": 
+              UPDATE departments SET dept_name = 'Human Resources' WHERE dept_name = 'HR'; 
+
+(h) Delete the employee named "Charlie Brown": 
+              DELETE FROM employees WHERE emp_name = 'Charlie Brown';
+
+(i) Remove the department "Marketing": 
+              DELETE FROM departments WHERE dept_name = 'Marketing'; 
+
+(j) Remove all employees without an email address: 
+              DELETE FROM employees WHERE email IS NULL;
