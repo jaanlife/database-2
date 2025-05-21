@@ -1,0 +1,217 @@
+
+ 1. `add_numbers` – Procedure to add two numbers and print the sum
+
+
+CREATE OR REPLACE PROCEDURE add_numbers(num1 INT, num2 INT)
+LANGUAGE plpgsql
+AS $$
+DECLARE
+    sum_result INT;
+BEGIN
+    sum_result := num1 + num2;
+    RAISE NOTICE 'The sum is: %', sum_result;
+END;
+$$;
+
+
+2. Combine `first_name` and `last_name`, print full name
+
+
+CREATE OR REPLACE PROCEDURE print_full_name(first_name TEXT, last_name TEXT)
+LANGUAGE plpgsql
+AS $$
+DECLARE
+    full_name TEXT;
+BEGIN
+    full_name := first_name || ' ' || last_name;
+    RAISE NOTICE 'Full name: %', full_name;
+END;
+$$;
+
+
+
+
+3. `double_value` – Double salary using `INOUT` parameter
+
+
+CREATE OR REPLACE PROCEDURE double_value(INOUT salary NUMERIC)
+LANGUAGE plpgsql
+AS $$
+BEGIN
+    salary := salary * 2;
+END;
+$$;
+
+
+ DO block to call `double_value` and print result
+
+
+DO $$
+DECLARE
+    my_salary NUMERIC := 25000;
+BEGIN
+    CALL double_value(my_salary);
+    RAISE NOTICE 'Doubled salary: %', my_salary;
+END;
+$$;
+
+
+
+
+ 4. Create `products` table in `ABXCompany` database
+
+Make sure you're connected to `ABXCompany` database:
+
+
+CREATE TABLE products (
+    product_id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    name TEXT NOT NULL,
+    price NUMERIC(10,2),
+    stock_quantity INT
+);
+
+
+
+
+ 5. `add_product` procedure
+
+
+CREATE OR REPLACE PROCEDURE add_product(
+    product_name TEXT,
+    product_price NUMERIC,
+    product_stock INT
+)
+LANGUAGE plpgsql
+AS $$
+BEGIN
+    INSERT INTO products(name, price, stock_quantity)
+    VALUES (product_name, product_price, product_stock);
+    RAISE NOTICE 'Product added: %', product_name;
+END;
+$$;
+
+
+
+### 6. `get_product_by_id` procedure
+
+
+CREATE OR REPLACE PROCEDURE get_product_by_id(p_id INT)
+LANGUAGE plpgsql
+AS $$
+DECLARE
+    p_name TEXT;
+    p_price NUMERIC;
+    p_stock INT;
+BEGIN
+    SELECT name, price, stock_quantity
+    INTO p_name, p_price, p_stock
+    FROM products
+    WHERE product_id = p_id;
+
+    RAISE NOTICE 'Name: %, Price: %, Stock: %', p_name, p_price, p_stock;
+END;
+$$;
+
+
+
+
+### 7. `update_product_stock` procedure
+
+
+CREATE OR REPLACE PROCEDURE update_product_stock(p_id INT, new_stock INT)
+LANGUAGE plpgsql
+AS $$
+BEGIN
+    UPDATE products
+    SET stock_quantity = new_stock
+    WHERE product_id = p_id;
+
+    RAISE NOTICE 'Stock updated for product ID: %', p_id;
+END;
+$$;
+
+
+
+
+8. `delete_product` procedure
+
+
+CREATE OR REPLACE PROCEDURE delete_product(p_id INT)
+LANGUAGE plpgsql
+AS $$
+BEGIN
+    DELETE FROM products WHERE product_id = p_id;
+    RAISE NOTICE 'Product deleted with ID: %', p_id;
+END;
+$$;
+
+
+
+
+ 9. `calculate_total_stock_value_of_product` procedure
+
+CREATE OR REPLACE PROCEDURE calculate_total_stock_value_of_product(p_id INT)
+LANGUAGE plpgsql
+AS $$
+DECLARE
+    price NUMERIC;
+    quantity INT;
+    total_value NUMERIC;
+BEGIN
+    SELECT price, stock_quantity
+    INTO price, quantity
+    FROM products
+    WHERE product_id = p_id;
+
+    total_value := price * quantity;
+
+    RAISE NOTICE 'Total stock value: %', total_value;
+END;
+$$;
+
+
+
+ 10. `check_stock_level` procedure
+
+
+CREATE OR REPLACE PROCEDURE check_stock_level(p_id INT)
+LANGUAGE plpgsql
+AS $$
+DECLARE
+    stock INT;
+BEGIN
+    SELECT stock_quantity INTO stock FROM products WHERE product_id = p_id;
+
+    IF stock <= 10 THEN
+        RAISE NOTICE 'Low stock';
+    ELSIF stock > 10 AND stock <= 55 THEN
+        RAISE NOTICE 'Sufficient stock';
+    ELSE
+        RAISE NOTICE 'High stock';
+    END IF;
+END;
+$$;
+
+
+ 11. `check_stock_category` using `CASE`
+
+
+CREATE OR REPLACE PROCEDURE check_stock_category(p_id INT)
+LANGUAGE plpgsql
+AS $$
+DECLARE
+    stock INT;
+    category TEXT;
+BEGIN
+    SELECT stock_quantity INTO stock FROM products WHERE product_id = p_id;
+
+    category := CASE
+        WHEN stock < 10 THEN 'Low Stock'
+        WHEN stock BETWEEN 10 AND 50 THEN 'Moderate Stock'
+        ELSE 'High Stock'
+    END;
+
+    RAISE NOTICE 'Stock Category: %', category;
+END;
+$$;
+
